@@ -1,0 +1,48 @@
+stages:
+  - security
+
+variables:
+  GIT_DEPTH: "0"
+
+gitleaks:
+  stage: security
+  image:
+    name: zricethezav/gitleaks:latest
+    entrypoint: [""]
+  script:
+    - gitleaks detect --source . --report-format json --report-path gitleaks-report.json --verbose
+  allow_failure: true
+  artifacts:
+    when: always
+    paths:
+      - gitleaks-report.json
+
+trivy:
+  stage: security
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  script:
+    - trivy fs --scanners vuln --format json --output trivy-fs-report.json .
+    - trivy config --format json --output trivy-config-report.json .
+    - trivy fs --scanners vuln --severity HIGH,CRITICAL .
+  allow_failure: true
+  artifacts:
+    when: always
+    paths:
+      - trivy-fs-report.json
+      - trivy-config-report.json
+
+checkov:
+  stage: security
+  image:
+    name: bridgecrew/checkov:latest
+    entrypoint: [""]
+  script:
+    - checkov -d terraform-vuln --output json --output-file-path . || true
+    - checkov -d terraform-vuln --compact --quiet || true
+  allow_failure: true
+  artifacts:
+    when: always
+    paths:
+      - results_json.json
