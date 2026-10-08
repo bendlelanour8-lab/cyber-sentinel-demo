@@ -1,0 +1,34 @@
+name: security-scans
+on: [push, workflow_dispatch]
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: |
+          docker run --rm -v "$PWD":/repo zricethezav/gitleaks:latest detect --source /repo --report-format json --report-path /repo/gitleaks-report.json --verbose || true
+      - uses: actions/upload-artifact@v4
+        with: { name: gitleaks-report, path: gitleaks-report.json }
+
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          docker run --rm -v "$PWD":/repo aquasec/trivy:latest fs --scanners vuln --format json --output /repo/trivy-report.json /repo || true
+          docker run --rm -v "$PWD":/repo aquasec/trivy:latest fs --scanners vuln --severity HIGH,CRITICAL /repo || true
+      - uses: actions/upload-artifact@v4
+        with: { name: trivy-report, path: trivy-report.json }
+
+  checkov:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          pip install checkov
+          checkov -d terraform-vuln -o json > checkov-report.json || true
+          checkov -d terraform-vuln --compact --quiet || true
+      - uses: actions/upload-artifact@v4
+        with: { name: checkov-report, path: checkov-report.json }
