@@ -78,7 +78,7 @@ spec:
     spec:
       containers:
         - name: helpdesk
-          image: ghcr.io/bendlelanour8-lab/cyber-sentinel-demo:latest
+          image: ghcr.io/bendlelanour8-lab/cyber-sentinel-demo:9258d82e6718e59b9a14e25d4a1791bcee7fac76
           env:
             - name: DB_HOST
               value: db
