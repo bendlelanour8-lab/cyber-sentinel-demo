@@ -79,6 +79,12 @@ spec:
       containers:
         - name: helpdesk
           image: ghcr.io/bendlelanour8-lab/cyber-sentinel-demo:9258d82e6718e59b9a14e25d4a1791bcee7fac76
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
             - name: DB_HOST
               value: db
