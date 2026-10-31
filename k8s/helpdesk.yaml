@@ -24,9 +24,15 @@ spec:
       labels:
         app: db
     spec:
+      securityContext:
+        fsGroup: 999
       containers:
         - name: postgres
           image: postgres:16
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+            allowPrivilegeEscalation: false
           env:
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
