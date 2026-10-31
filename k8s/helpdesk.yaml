@@ -78,7 +78,7 @@ spec:
     spec:
       containers:
         - name: helpdesk
-          image: ghcr.io/bendlelanour8-lab/cyber-sentinel-demo:9258d82e6718e59b9a14e25d4a1791bcee7fac76
+          image: ghcr.io/bendlelanour8-lab/cyber-sentinel-demo:fbb6ff29817f9785e00f1fe7c9e733292c2b4f49
           securityContext:
             runAsNonRoot: true
             runAsUser: 10001
